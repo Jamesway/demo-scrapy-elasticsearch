@@ -27,7 +27,7 @@ CONCURRENT_REQUESTS = 8
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -64,9 +64,10 @@ SPIDER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'scrapy_dca.pipelines.JsonPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   # 'scrapy_dca.pipelines.ScrapyDcaPipeline': 300,
+   'scrapy_dca.pipelines.ElasticSearchBulkPipeline': 300,
+}
 
 LOG_LEVEL = 'INFO'
 
@@ -90,3 +91,25 @@ LOG_LEVEL = 'INFO'
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"
+
+
+# #MYSQL
+# CONNECTION_STRING = "{drivername}://{user}:{passwd}@{host}:{port}/{db_name}?charset=utf8".format(
+#     drivername = "mysql",
+#     user = os.getenv("MYSQL_USER"),
+#     passwd = os.getenv("MYSQL_PASSWORD"),
+#     host = os.getenv("MYSQL_HOST"),
+#     port = "3306",
+#     db_name = os.getenv("MYSQL_DATABASE"),
+# )
+from os import getenv
+#ELASTICSEARCH
+ELASTIC_SEARCH = 'https://{user}:{passwd}@{host}'.format(
+    host = getenv("ES_HOST").replace('https://',''),
+    user = getenv("ES_USER"),
+    passwd = getenv("ES_PASSWORD"),
+)
+
+MAPQUEST_KEY = getenv("MAPQUEST_KEY");
