@@ -1,16 +1,17 @@
-import scrapy
-from time import time, sleep, strptime, strftime
+from scrapy import Spider
 from scrapy_dca.items import PhysicianItem
-from scrapy.selector import Selector
-from scrapy.http import FormRequest, Request, TextResponse
+from scrapy.http import TextResponse
 from scrapy.shell import inspect_response
 from selenium import webdriver
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import Select, WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import json
 from datetime import datetime
 
 
-class PostSpider(scrapy.Spider):
+class PostSpider(Spider):
+
     name = 'dca_spider'
     allowed_domains = ['search.dca.ca.gov']
     start_urls = ['https://search.dca.ca.gov/physicianSurvey']
@@ -28,7 +29,6 @@ class PostSpider(scrapy.Spider):
 
 
     # crawl starts with a JS heavy form submission - selenium, chromedriver required
-
     def get_selenium_response(self, url):
 
         self.driver.get(url)
@@ -43,29 +43,40 @@ class PostSpider(scrapy.Spider):
         status.select_by_value('20')
         discipline = Select(self.driver.find_element_by_id('hasDiscipline'))
         discipline.select_by_value('No')
-        self.driver.find_element_by_id('srchSubmitHome').click()
 
+        # the form doesn't completely load for a good 20-30 seconds
+        # we need to account for some of the form options not being available iniatially - namely the submit button
+        el = WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.ID, 'srchSubmitHome'))
+        )
+        el.click()
 
+        # the initial load doesn't have the results, they come in as ajax so we need to wait for the footer
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'footer'))
+        )
+
+        # convert the resulting source to a scrapy TextResponse
         response = TextResponse(url=self.driver.current_url, body=self.driver.page_source, encoding='utf-8')
-        #return self.driver.page_source.encode('utf-8')
-        # return response.css('a.button.newTab::attr(href)').extract()
+
+        # inspect_response(response, self)
         return response
 
     # default parser
     def parse(self, response):
 
+
         # inspect_response(response, self)
 
         # Here you got response from webdriver
         # you can use selectors to extract data from it
-        #selenium_response = Selector(text=self.get_selenium_response(response.url))
-        selenium_response = self.get_selenium_response(response.url)
+        response = self.get_selenium_response(response.url)
 
 
 
-        for link in selenium_response.xpath('//ul[contains(@class, "actions")]/li/a[contains(@class, "newTab")]/@href'):
-            print('****** ' + link + ' *******')
-            yield selenium_response.follow(link, self.parse_physician)
+        for link in response.xpath('//ul[contains(@class, "actions")]/li/a[contains(@class, "newTab")]/@href'):
+
+            yield response.follow(link, self.parse_physician)
             # yield selenium_response.follow(link, self.parse_shell)
 
     def parse_physician(self, response):
@@ -106,6 +117,3 @@ class PostSpider(scrapy.Spider):
         # We want to inspect one specific response.
         if "search.dca.ca.gov" in response.url:
             inspect_response(response, self)
-
-
-#select * from practice_table1 as pt INNER JOIN (select min(appointment_time) as min_appt_time, practice_id as p_id from appointment_table group by p_id) as at ON pt.id = at.p_id order by min_appt_time asc

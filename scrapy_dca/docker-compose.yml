@@ -1,8 +1,7 @@
 version: "2"
 services:
   scrapy:
-    # image: jamesway/scrapy
-    image: scrapy-geo1
+    image: jamesway/scrapy
     working_dir: /code
     volumes:
       - ./:/code

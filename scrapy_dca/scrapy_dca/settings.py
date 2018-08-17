@@ -14,9 +14,7 @@ BOT_NAME = 'scrapy_dca'
 SPIDER_MODULES = ['scrapy_dca.spiders']
 NEWSPIDER_MODULE = 'scrapy_dca.spiders'
 
-
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'scrapy_dca (+http://www.yourdomain.com)'
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -58,9 +56,9 @@ SPIDER_MIDDLEWARES = {
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+EXTENSIONS = {
+   'scrapy.extensions.telnet.TelnetConsole': None,
+}
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
@@ -71,18 +69,18 @@ ITEM_PIPELINES = {
 
 LOG_LEVEL = 'INFO'
 
-# Enable and configure the AutoThrottle extension (disabled by default)
-# See https://doc.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
-# The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
-# The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
-# The average number of requests Scrapy should be sending in parallel to
-# each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-# Enable showing throttling stats for every response received:
-#AUTOTHROTTLE_DEBUG = False
+# # Enable and configure the AutoThrottle extension (disabled by default)
+# # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
+# AUTOTHROTTLE_ENABLED = True
+# # The initial download delay
+# AUTOTHROTTLE_START_DELAY = 5
+# # The maximum download delay to be set in case of high latencies
+# AUTOTHROTTLE_MAX_DELAY = 60
+# # The average number of requests Scrapy should be sending in parallel to
+# # each remote server
+# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+# # Enable showing throttling stats for every response received:
+# AUTOTHROTTLE_DEBUG = False
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
@@ -92,19 +90,19 @@ LOG_LEVEL = 'INFO'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"
-
+# keep config out of version control
+from os import getenv
 
 # #MYSQL
-# CONNECTION_STRING = "{drivername}://{user}:{passwd}@{host}:{port}/{db_name}?charset=utf8".format(
-#     drivername = "mysql",
-#     user = os.getenv("MYSQL_USER"),
-#     passwd = os.getenv("MYSQL_PASSWORD"),
-#     host = os.getenv("MYSQL_HOST"),
-#     port = "3306",
-#     db_name = os.getenv("MYSQL_DATABASE"),
-# )
-from os import getenv
+CONNECTION_STRING = "{drivername}://{user}:{passwd}@{host}:{port}/{db_name}?charset=utf8".format(
+    drivername = "mysql",
+    user = getenv("MYSQL_USER"),
+    passwd = getenv("MYSQL_PASSWORD"),
+    host = getenv("MYSQL_HOST"),
+    port = "3306",
+    db_name = getenv("MYSQL_DATABASE"),
+)
+
 #ELASTICSEARCH
 ELASTIC_SEARCH = 'https://{user}:{passwd}@{host}'.format(
     host = getenv("ES_HOST").replace('https://',''),

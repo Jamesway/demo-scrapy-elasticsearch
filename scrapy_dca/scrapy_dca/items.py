@@ -8,11 +8,6 @@
 from scrapy import Item, Field
 
 
-#class ScrapyDcaItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-#    pass
-
 class PhysicianItem(Item):
 
     timestamp = Field()  #scrape time
