@@ -117,6 +117,15 @@ class ElasticSearchBulkPipeline(object):
                         "location": {
                             "type": "geo_point"
                         },
+                        "med_school": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
                         "name": {
                             "type": "text",
                             "fields": {
@@ -205,6 +214,7 @@ class ElasticSearchBulkPipeline(object):
                     'language': item['language'],
                     'gender': item['gender'],
                     'services': item['services'],
+                    'med_school': item['school'],
                     'scraped_at': datetime.now(),
                 },
             }
